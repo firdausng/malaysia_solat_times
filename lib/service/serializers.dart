@@ -17,6 +17,13 @@ part 'serializers.g.dart';
   FbLocation,
   FbLocationResponse,
   FbSearchPlaceResponse,
+  EsolatZone,
 ])
 final Serializers serializers =
     (_$serializers.toBuilder()..addPlugin(StandardJsonPlugin())).build();
+
+T deserialize<T>(dynamic value) =>
+    serializers.deserializeWith<T>(serializers.serializerForType(T), value);
+
+BuiltList<T> deserializeListOf<T>(dynamic value) => BuiltList.from(
+    value.map((value) => deserialize<T>(value)).toList(growable: false));

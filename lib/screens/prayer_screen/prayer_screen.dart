@@ -137,19 +137,22 @@ class PrayerScreenTop extends StatefulWidget {
 class _PrayerScreenTopState extends State<PrayerScreenTop> {
   @override
   Widget build(BuildContext context) {
+    //print(Provider.of<AppProvider>(context).esolatZoneList[0]);
+
+    //Provider.of<AppProvider>(context).takwimSolat.prayerTime.
     return Column(
       children: <Widget>[
         Container(
           child: Column(
             children: <Widget>[
               Text(
-                '15 minutes',
+                '${Provider.of<AppProvider>(context).nextPrayerTimeLeft} minutes',
                 style: kSolatTimeRemainStyle.copyWith(
                   fontSize: 50,
                 ),
               ),
               Text(
-                'left until Maghrib',
+                'left until ${Provider.of<AppProvider>(context).nextPrayerTime}',
                 style: kSolatTimeRemainStyle,
               ),
             ],

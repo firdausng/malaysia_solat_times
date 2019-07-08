@@ -11,6 +11,7 @@ Serializer<TarikhTakwim> _$tarikhTakwimSerializer =
     new _$TarikhTakwimSerializer();
 Serializer<TakwimSolat> _$takwimSolatSerializer = new _$TakwimSolatSerializer();
 Serializer<PrayerTime> _$prayerTimeSerializer = new _$PrayerTimeSerializer();
+Serializer<EsolatZone> _$esolatZoneSerializer = new _$EsolatZoneSerializer();
 
 class _$SirimTimeSerializer implements StructuredSerializer<SirimTime> {
   @override
@@ -301,6 +302,71 @@ class _$PrayerTimeSerializer implements StructuredSerializer<PrayerTime> {
           break;
         case 'syuruk':
           result.syuruk = serializers.deserialize(value,
+              specifiedType: const FullType(String)) as String;
+          break;
+      }
+    }
+
+    return result.build();
+  }
+}
+
+class _$EsolatZoneSerializer implements StructuredSerializer<EsolatZone> {
+  @override
+  final Iterable<Type> types = const [EsolatZone, _$EsolatZone];
+  @override
+  final String wireName = 'EsolatZone';
+
+  @override
+  Iterable serialize(Serializers serializers, EsolatZone object,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = <Object>[
+      'area',
+      serializers.serialize(object.area, specifiedType: const FullType(String)),
+      'MptZone',
+      serializers.serialize(object.MptZone,
+          specifiedType: const FullType(String)),
+    ];
+    if (object.state != null) {
+      result
+        ..add('state')
+        ..add(serializers.serialize(object.state,
+            specifiedType: const FullType(String)));
+    }
+    if (object.zone != null) {
+      result
+        ..add('zone')
+        ..add(serializers.serialize(object.zone,
+            specifiedType: const FullType(String)));
+    }
+    return result;
+  }
+
+  @override
+  EsolatZone deserialize(Serializers serializers, Iterable serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = new EsolatZoneBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current as String;
+      iterator.moveNext();
+      final dynamic value = iterator.current;
+      switch (key) {
+        case 'state':
+          result.state = serializers.deserialize(value,
+              specifiedType: const FullType(String)) as String;
+          break;
+        case 'zone':
+          result.zone = serializers.deserialize(value,
+              specifiedType: const FullType(String)) as String;
+          break;
+        case 'area':
+          result.area = serializers.deserialize(value,
+              specifiedType: const FullType(String)) as String;
+          break;
+        case 'MptZone':
+          result.MptZone = serializers.deserialize(value,
               specifiedType: const FullType(String)) as String;
           break;
       }
@@ -968,6 +1034,118 @@ class PrayerTimeBuilder implements Builder<PrayerTime, PrayerTimeBuilder> {
             isha: isha,
             maghrib: maghrib,
             syuruk: syuruk);
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$EsolatZone extends EsolatZone {
+  @override
+  final String state;
+  @override
+  final String zone;
+  @override
+  final String area;
+  @override
+  final String MptZone;
+
+  factory _$EsolatZone([void Function(EsolatZoneBuilder) updates]) =>
+      (new EsolatZoneBuilder()..update(updates)).build();
+
+  _$EsolatZone._({this.state, this.zone, this.area, this.MptZone}) : super._() {
+    if (area == null) {
+      throw new BuiltValueNullFieldError('EsolatZone', 'area');
+    }
+    if (MptZone == null) {
+      throw new BuiltValueNullFieldError('EsolatZone', 'MptZone');
+    }
+  }
+
+  @override
+  EsolatZone rebuild(void Function(EsolatZoneBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  EsolatZoneBuilder toBuilder() => new EsolatZoneBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is EsolatZone &&
+        state == other.state &&
+        zone == other.zone &&
+        area == other.area &&
+        MptZone == other.MptZone;
+  }
+
+  @override
+  int get hashCode {
+    return $jf($jc(
+        $jc($jc($jc(0, state.hashCode), zone.hashCode), area.hashCode),
+        MptZone.hashCode));
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper('EsolatZone')
+          ..add('state', state)
+          ..add('zone', zone)
+          ..add('area', area)
+          ..add('MptZone', MptZone))
+        .toString();
+  }
+}
+
+class EsolatZoneBuilder implements Builder<EsolatZone, EsolatZoneBuilder> {
+  _$EsolatZone _$v;
+
+  String _state;
+  String get state => _$this._state;
+  set state(String state) => _$this._state = state;
+
+  String _zone;
+  String get zone => _$this._zone;
+  set zone(String zone) => _$this._zone = zone;
+
+  String _area;
+  String get area => _$this._area;
+  set area(String area) => _$this._area = area;
+
+  String _MptZone;
+  String get MptZone => _$this._MptZone;
+  set MptZone(String MptZone) => _$this._MptZone = MptZone;
+
+  EsolatZoneBuilder();
+
+  EsolatZoneBuilder get _$this {
+    if (_$v != null) {
+      _state = _$v.state;
+      _zone = _$v.zone;
+      _area = _$v.area;
+      _MptZone = _$v.MptZone;
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(EsolatZone other) {
+    if (other == null) {
+      throw new ArgumentError.notNull('other');
+    }
+    _$v = other as _$EsolatZone;
+  }
+
+  @override
+  void update(void Function(EsolatZoneBuilder) updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  _$EsolatZone build() {
+    final _$result = _$v ??
+        new _$EsolatZone._(
+            state: state, zone: zone, area: area, MptZone: MptZone);
     replace(_$result);
     return _$result;
   }

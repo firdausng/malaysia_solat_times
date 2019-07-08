@@ -15,9 +15,7 @@ class _SolatTimeSubScreenState extends State<SolatTimeSubScreen> {
   Widget build(BuildContext context) {
     //print(Provider.of<AppProvider>(context).tarikhTakwim);
     //print(Provider.of<AppProvider>(context).takwimSolat);
-//    var datetimeNow = DateTime.now();
-//    var dateNow = datetimeNow.toIso8601String().split("T")[0];
-//    print(Provider.of<AppProvider>(context).takwimSolat);
+//    print(Provider.of<AppProvider>(context).esolatZoneList[0]);
     var takwinDateTime =
         Provider.of<AppProvider>(context).takwimSolat.serverTime;
     var takwinDate = takwinDateTime.split(" ")[0];

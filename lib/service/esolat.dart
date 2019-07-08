@@ -61,3 +61,17 @@ abstract class PrayerTime implements Built<PrayerTime, PrayerTimeBuilder> {
   PrayerTime._();
   factory PrayerTime([void Function(PrayerTimeBuilder) updates]) = _$PrayerTime;
 }
+
+abstract class EsolatZone implements Built<EsolatZone, EsolatZoneBuilder> {
+  static Serializer<EsolatZone> get serializer => _$esolatZoneSerializer;
+
+  @nullable
+  String get state;
+  @nullable
+  String get zone;
+  String get area;
+  String get MptZone;
+
+  EsolatZone._();
+  factory EsolatZone([void Function(EsolatZoneBuilder) updates]) = _$EsolatZone;
+}

@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:malaysia_solat_times/screens/prayer_screen/prayer_screen.dart';
@@ -55,14 +56,38 @@ class AppProvider with ChangeNotifier {
   String _currentCity = "";
   String get currentCity => _currentCity;
 
+  String _currentPrayerTime = "";
+  String get currentPrayerTime => _currentPrayerTime;
+
+  String _nextPrayerTime = "";
+  String get nextPrayerTime => _nextPrayerTime;
+
+  String _nextPrayerTimeLeft = "0";
+  String get nextPrayerTimeLeft => _nextPrayerTimeLeft;
+
+  String _solatZone = "";
+  String get solatZone => _solatZone;
+
+  BuiltList<EsolatZone> _esolatZoneList;
+  BuiltList<EsolatZone> get esolatZoneList => _esolatZoneList;
+
   AppProvider() {
-    //getSirimTime();
-    getCurrentCity().then((String current) => {setCurrentCity(current)});
-    getEsolatInfo().then((void a) => notifyListeners());
+    getCurrentCity()
+        .then((String current) async => {await setCurrentCity(current)});
   }
 
-  void setCurrentCity(String city) {
+  Future<void> setCurrentCity(String city) async {
     _currentCity = city;
+    _esolatZoneList = EsolatService().loadEsolatZone();
+    if (_currentCity != null) {
+      var _solatZone = _esolatZoneList.where(
+        (zone) => zone.area.contains(_currentCity),
+      );
+      //print(_solatZone.first.zone);
+      await getEsolatInfo(_solatZone.first.zone);
+      //print(_takwimSolat.prayerTime.first.imsak);
+    }
+
     notifyListeners();
   }
 
@@ -80,12 +105,132 @@ class AppProvider with ChangeNotifier {
     return place.data.first.location.city;
   }
 
-  Future<void> getEsolatInfo() async {
+  Future<void> getEsolatInfo(solatZone) async {
     var esolatService = EsolatService();
-//    _sirimTimerimTime = await esolatService.getSirimTime();
-//    _tarikhTakwim = await esolatService.getTarikhTakwim();
-    _takwimSolat = await esolatService.getTakwimSolat();
-    //print(_sirimTimerimTime);
-    //notifyListeners();
+
+    esolatService.getSirimTime().then((val) => {_sirimTimerimTime = val});
+    esolatService.getTarikhTakwim().then((val) => {_tarikhTakwim = val});
+    _takwimSolat = await esolatService.getTakwimSolat(zone: solatZone);
+    setPrayerInfo();
+    //new DateFormat("h:mm:ss a").format(DateTime.tryParse("$takwinDate ${Provider.of<AppProvider>(context).takwimSolat.prayerTime[0].imsak
+    notifyListeners();
+  }
+
+  int getDurationInMinutes(DateTime currentDateTime, DateTime prayerDateTime) {
+    return currentDateTime.difference(prayerDateTime).inMinutes;
+  }
+
+  DateTime convertPrayerToDatetime(String currentDate, String prayerTime) {
+    return DateTime.tryParse("$currentDate $prayerTime");
+  }
+
+  void setCurrentAndNextPrayerInfo(
+      {String currentPrayerTime,
+      String nextPrayerTime,
+      String nextPrayerTimeLeft}) {
+    _currentPrayerTime = currentPrayerTime;
+    _nextPrayerTime = nextPrayerTime;
+    _nextPrayerTimeLeft = nextPrayerTimeLeft;
+  }
+
+  void setPrayerInfo() {
+    var takwinDate = _takwimSolat.serverTime.split(" ")[0];
+    var currentDateTime = DateTime.now();
+
+    if (getDurationInMinutes(
+            currentDateTime,
+            convertPrayerToDatetime(
+                takwinDate, _takwimSolat.prayerTime[0].imsak)) <
+        0) {
+      setCurrentAndNextPrayerInfo(
+        currentPrayerTime: "imsak",
+        nextPrayerTime: "Subuh",
+        nextPrayerTimeLeft: _takwimSolat.prayerTime[0].fajr.toString(),
+      );
+    } else if (getDurationInMinutes(
+            currentDateTime,
+            convertPrayerToDatetime(
+                takwinDate, _takwimSolat.prayerTime[0].fajr)) <
+        0) {
+      setCurrentAndNextPrayerInfo(
+        currentPrayerTime: "Subuh",
+        nextPrayerTime: "Syuruk",
+        nextPrayerTimeLeft: _takwimSolat.prayerTime[0].syuruk.toString(),
+      );
+    } else if (getDurationInMinutes(
+            currentDateTime,
+            convertPrayerToDatetime(
+                takwinDate, _takwimSolat.prayerTime[0].syuruk)) <
+        0) {
+      setCurrentAndNextPrayerInfo(
+        currentPrayerTime: "Syuruk",
+        nextPrayerTime: "Zohor",
+        nextPrayerTimeLeft: _takwimSolat.prayerTime[0].dhuhr.toString(),
+      );
+    } else if (getDurationInMinutes(
+            currentDateTime,
+            convertPrayerToDatetime(
+                takwinDate, _takwimSolat.prayerTime[0].dhuhr)) <
+        0) {
+      setCurrentAndNextPrayerInfo(
+        currentPrayerTime: "Zohor",
+        nextPrayerTime: "Asar",
+        nextPrayerTimeLeft: _takwimSolat.prayerTime[0].asr.toString(),
+      );
+    } else if (getDurationInMinutes(
+            currentDateTime,
+            convertPrayerToDatetime(
+                takwinDate, _takwimSolat.prayerTime[0].asr)) <
+        0) {
+      setCurrentAndNextPrayerInfo(
+        currentPrayerTime: "Asar",
+        nextPrayerTime: "Maghrib",
+        nextPrayerTimeLeft: _takwimSolat.prayerTime[0].maghrib.toString(),
+      );
+    } else if (getDurationInMinutes(
+            currentDateTime,
+            convertPrayerToDatetime(
+                takwinDate, _takwimSolat.prayerTime[0].maghrib)) <
+        0) {
+      setCurrentAndNextPrayerInfo(
+        currentPrayerTime: "Maghrib",
+        nextPrayerTime: "Isyak",
+        nextPrayerTimeLeft: _takwimSolat.prayerTime[0].isha.toString(),
+      );
+    } else if (getDurationInMinutes(
+            currentDateTime,
+            convertPrayerToDatetime(
+                takwinDate, _takwimSolat.prayerTime[0].isha)) <
+        0) {
+      setCurrentAndNextPrayerInfo(
+        currentPrayerTime: "Isyak",
+        nextPrayerTime: "Imsak",
+        nextPrayerTimeLeft: getDurationInMinutes(
+                currentDateTime,
+                convertPrayerToDatetime(
+                    takwinDate, _takwimSolat.prayerTime[0].imsak))
+            .toString(),
+      );
+    } else if (getDurationInMinutes(
+                currentDateTime,
+                convertPrayerToDatetime(
+                    takwinDate, _takwimSolat.prayerTime[0].isha)) >
+            0 &&
+        getDurationInMinutes(
+                currentDateTime,
+                convertPrayerToDatetime(
+                    takwinDate, _takwimSolat.prayerTime[0].imsak)) >
+            0) {
+      setCurrentAndNextPrayerInfo(
+        currentPrayerTime: "Isyak",
+        nextPrayerTime: "Imsak",
+        nextPrayerTimeLeft: getDurationInMinutes(
+                currentDateTime,
+                convertPrayerToDatetime(
+                    takwinDate, _takwimSolat.prayerTime[0].imsak))
+            .toString(),
+      );
+    }
+    notifyListeners();
   }
 }

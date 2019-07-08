@@ -7,6 +7,7 @@ part of serializers;
 // **************************************************************************
 
 Serializers _$serializers = (new Serializers().toBuilder()
+      ..add(EsolatZone.serializer)
       ..add(FbLocation.serializer)
       ..add(FbLocationResponse.serializer)
       ..add(FbSearchPlaceResponse.serializer)
